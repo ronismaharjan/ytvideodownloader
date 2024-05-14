@@ -30,8 +30,10 @@ pip install -r requirements.txt
     <p>&bull;Double click the <b>ytvideodownloader</b> file in the folder you downloaded. </p>
 
 -----
-![image](https://github.com/ronismaharjan/ytvideodownloader/blob/main/assets/asset2.PNG)
-![image](https://github.com/ronismaharjan/ytvideodownloader/blob/main/assets/asset1.PNG)
+![image](https://github.com/ronismaharjan/ytvideodownloader/assets/122330324/c276f8a6-e147-48d6-b424-5d88b11d35e1)
+![image](https://github.com/ronismaharjan/ytvideodownloader/assets/122330324/2b1321f7-1d15-455c-81da-e0b81e355c65)
+
+
    
 
 
