@@ -2,72 +2,96 @@ from pytube import YouTube
 import os
 from moviepy.editor import AudioFileClip
 
-# Function to convert to mp3
+# Function to download video
 
 
-def convert_to_mp3(input_path, output_path):
+def download_video():
+    """Download the video from the given url"""
+    stream_dictionary = {}
+    available_resolutions = []
+    available_video_streams = youtube.streams.filter(
+        file_extension="mp4", type="video", progressive=True)
+
+    # Adding each classes into new dictionary
+    for stream_classes in available_video_streams:
+        stream_dictionary[stream_classes.resolution] = stream_classes
+    for key in stream_dictionary:
+        available_resolutions.append(key)
+
+    # Taking resolution input form user
+    choosed_resolution = input(
+        f"Available resolutions:{('/'.join(available_resolutions))}\nType the resolution you want to download:")
+    selected_stream = stream_dictionary[choosed_resolution]
+
+    # Downloading the given resolution video
+    print("Downloading...")
+    selected_stream.download(DOWNLOAD_FOLDER)
+    print("Download Completed..")
+# Function to download audio
+
+
+def download_audio():
+    """Downloads the mp3 of given youtube link"""
+    print("Downloading...")
+    audio_stream = youtube.streams.get_by_itag(251)
+    audio_stream.download(
+        DOWNLOAD_FOLDER, filename="audio.webm")
+    youtube_title = youtube.title.replace("|", "")
+
+    input_file = rf"C:\Users\Home\Downloads\audio.webm"
+    output_file = rf"C:\Users\Home\Downloads\{youtube_title}.mp3"
+
+    mp3_converter(input_file, output_file)
+    os.remove(input_file)
+    print("Download Completed..")
+
+
+# Function to convert the downloaded audio to mp3 format
+
+
+def mp3_converter(input_file, output_file):
     try:
+        # Load the WebM file
+        audio_clip = AudioFileClip(input_file)
 
-        audio_clip = AudioFileClip(input_file_path)
+        # Write the audio clip to an MP3 file
+        audio_clip.write_audiofile(output_file, codec='mp3')
 
-        # Save the audio as MP3
-        audio_clip.write_audiofile(output_file_path)
-
-        # Close the video clip
-        audio_clip.close()
-
-        print("Conversion to MP3 completed.")
     except Exception as e:
-        print("MoviePy error:", e)
+        print("An error occurred during conversion:", e)
+# The main function
 
 
-stream = ''
+def downloader(file_type):
+
+    if user_type == "v":
+        download_video()
+
+    elif user_type == "a":
+        download_audio()
+    else:
+        print("We only support audio and video type")
+
+
 DOWNLOAD_FOLDER = r"C:\Users\Home\Downloads"
 is_on = True
-
-# Loop until exit or close
 while is_on:
-    # Take the video url
-    URL = input("URL: ")
-    if URL == "exit" or URL == "close":
-        is_on = False
-    else:
-        try:
-            yt = YouTube(URL)
+    try:
+        URL = input("URL: ")
+        if URL == "exit":
+            is_on = False
+        youtube = YouTube(URL)
+        user_choice = input(
+            f"Do you want to download\n{youtube.title} by: {youtube.author}\nType 'y' or 'n': ").lower()
+        os.system('cls')
 
-            # Ask user if they want to download or not
-            user_choice = input(
-                f"{yt.title} by: {yt.author}.\nDo you want to download 'y' or 'n': ").lower()
+        if user_choice == "y":
+            user_type = input(
+                f"To Download\nType 'a' for audio and 'v' for video: ").lower()
+            os.system("cls")
+            downloader(user_type)
+        elif user_choice == "n":
+            is_on = False
 
-            # If want to download ask which format
-            format_type = input(
-                "Which format 'a' for mp3 and 'v' for mp4: ").lower()
-
-            # IF format is video then download at highest qualit
-            if format_type == "v":
-                video_quality = str(
-                    input("For Quality Type: '1080p', '720p', '360p': ").lower())
-                stream = yt.streams.get_by_resolution(video_quality)
-
-            # If format is in audio
-            if format_type == "a":
-                stream = yt.streams.get_by_itag(140)
-
-            # Show user downloading ....
-            print("Downloading...")
-            # Download video
-            if format_type == "v":
-                stream.download(output_path=DOWNLOAD_FOLDER)
-            else:
-                stream.download(output_path=DOWNLOAD_FOLDER)
-            # Convert video into mp3 file
-                input_file_path = rf"{DOWNLOAD_FOLDER}\{yt.title}.mp4"
-                output_file_path = rf"{DOWNLOAD_FOLDER}\{yt.title}_by_{yt.author}.mp3"
-                convert_to_mp3(input_file_path, output_file_path)
-            # Delete the video file
-                os.remove(input_file_path)
-
-            # Show download complete
-            print("Download completed..")
-        except Exception as e:
-            print(f"Error: {e}")
+    except Exception as e:
+        print(f"An error occurred while clearing the command prompt: {e}")
