@@ -3,9 +3,7 @@ import os
 from moviepy.editor import AudioFileClip
 
 # Function to download video
-
-
-def download_video():
+def download_video(download_folder):
     """Download the video from the given url"""
     stream_dictionary = {}
     available_resolutions = []
@@ -25,30 +23,25 @@ def download_video():
 
     # Downloading the given resolution video
     print("Downloading...")
-    selected_stream.download(DOWNLOAD_FOLDER)
+    selected_stream.download(download_folder)
     print("Download Completed..")
+
 # Function to download audio
-
-
-def download_audio():
+def download_audio(download_folder):
     """Downloads the mp3 of given youtube link"""
     print("Downloading...")
     audio_stream = youtube.streams.get_by_itag(251)
-    audio_stream.download(
-        DOWNLOAD_FOLDER, filename="audio.webm")
+    audio_stream.download(download_folder, filename="audio.webm")
     youtube_title = youtube.title.replace("|", "")
 
-    input_file = rf"C:\Users\Home\Downloads\audio.webm"
-    output_file = rf"C:\Users\Home\Downloads\{youtube_title}.mp3"
+    input_file = os.path.join(download_folder, "audio.webm")
+    output_file = os.path.join(download_folder, f"{youtube_title}.mp3")
 
     mp3_converter(input_file, output_file)
     os.remove(input_file)
     print("Download Completed..")
 
-
 # Function to convert the downloaded audio to mp3 format
-
-
 def mp3_converter(input_file, output_file):
     try:
         # Load the WebM file
@@ -59,21 +52,19 @@ def mp3_converter(input_file, output_file):
 
     except Exception as e:
         print("An error occurred during conversion:", e)
+
 # The main function
+def downloader(file_type, download_folder):
+    if file_type == "v":
+        download_video(download_folder)
 
-
-def downloader(file_type):
-
-    if user_type == "v":
-        download_video()
-
-    elif user_type == "a":
-        download_audio()
+    elif file_type == "a":
+        download_audio(download_folder)
     else:
         print("We only support audio and video type")
 
-
-DOWNLOAD_FOLDER = r"C:\Users\Home\Downloads"
+# Main loop
+download_folder = "downloads"
 is_on = True
 while is_on:
     try:
@@ -83,15 +74,13 @@ while is_on:
         youtube = YouTube(URL)
         user_choice = input(
             f"Do you want to download\n{youtube.title} by: {youtube.author}\nType 'y' or 'n': ").lower()
-        os.system('cls')
 
         if user_choice == "y":
             user_type = input(
                 f"To Download\nType 'a' for audio and 'v' for video: ").lower()
-            os.system("cls")
-            downloader(user_type)
+            downloader(user_type, download_folder)
         elif user_choice == "n":
             is_on = False
 
     except Exception as e:
-        print(f"An error occurred while clearing the command prompt: {e}")
+        print(f"An error occurred: {e}")
